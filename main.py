@@ -13,6 +13,8 @@ main_dir = os.path.split(os.path.abspath(__file__))[0]
 
 # Color variables
 green = (0, 200, 0)
+black = (0,0,0)
+blue = (0, 0, 250)
 # Object class Player
 class Sprite(pg.sprite.Sprite):
 	def __init__(self, color, height, width):
@@ -53,15 +55,33 @@ class Boulder(pg.sprite.Sprite):
         if self.rect.top > SCREEN_HEIGHT:
             self.kill()
 
+# A stationary enemy, that kills on contact. For holes and water etc.
+# OMG! Nu e dom osyliga också! Testa att gå på vattnet!
+class Hole(pg.sprite.Sprite):
+    def __init__(self, width, height, posx, posy):
+        super(Hole, self).__init__()
+        
+        self.image = pg.Surface((width,height))
+        self.image = self.image.convert_alpha()
+        self.image.fill((0,0,0,0))
+        self.rect = self.image.get_rect(center=(posx, posy))
+
+start_x = SCREEN_WIDTH//2
+start_y = SCREEN_HEIGHT-50
+holes = pg.sprite.Group()
 boulders = pg.sprite.Group()
 all_sprites_list = pg.sprite.Group()
 playerCar = Sprite((255,0,0), 20, 30)
-playerCar.rect.x = 200
-playerCar.rect.y = 300
+hole1 = Hole(350, 50, 420, 360)
+hole2 = Hole(50, 200, 270, 200 )
+hole3 = Hole(50, 200, 560, 200)
+holes.add(hole1, hole2, hole3)
+playerCar.rect.x = start_x
+playerCar.rect.y = start_y
 
 
 all_sprites_list.add(playerCar)
-
+all_sprites_list.add(hole1, hole2, hole3)
 #Load Images
 map_surface = pg.image.load(main_dir+'/Assets/Graphics/preview.png')
 map_surface = pg.transform.scale(map_surface, (SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -101,11 +121,17 @@ while True:
         playerCar.kill()
         pg.quit()
         exit()
+    if pg.sprite.spritecollideany(playerCar, holes):
+        # If so, then remove the player and quit the game
+        playerCar.kill()
+        pg.quit()
+        exit()
 
     #What to do when game is not active, aka gameover?
     else:                                     
         print("Game is not active. Gameover?")
     boulders.update()
+    holes.update()
     screen.blit(map_surface, (0,0))
     
     # Puting all items on the screen
