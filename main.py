@@ -166,9 +166,10 @@ while True:                                     #Infinite loop
         if keys[pg.K_RIGHT]:
             playerCar.moveRight(10)
         if keys[pg.K_DOWN]:
-            playerCar.moveForward(10)
-        if keys[pg.K_UP]:
             playerCar.moveBack(10)
+        if keys[pg.K_UP]:
+            playerCar.moveForward(10)
+
 
         if pg.sprite.spritecollideany(playerCar, boulders):
             # If so, then remove the player and quit the game
